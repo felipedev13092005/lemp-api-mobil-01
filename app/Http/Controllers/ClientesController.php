@@ -9,10 +9,8 @@ class ClientesController extends Controller
     public function index()
     {
         try {
-            $clientes = DB::table('cliente')->get();
-            return response()->json([
-                'clientes' => $clientes,
-            ]);
+            $clientes = Db::connection('dynamic_database')->table('cliente')->get();
+            return response()->json($clientes);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error querying the database',

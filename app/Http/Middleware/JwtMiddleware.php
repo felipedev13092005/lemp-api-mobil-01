@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
+
 class JwtMiddleware
 {
     public function handle(Request $request, Closure $next)
@@ -23,6 +24,7 @@ class JwtMiddleware
 
         // Extraer el token (se espera que el formato sea "Bearer <token>")
         $token = str_replace('Bearer ', '', $authHeader);
+
         try {
             // Decodificar el token usando la clave secreta
             $key = env('JWT_SECRET', 'your-secret-key');
@@ -40,22 +42,30 @@ class JwtMiddleware
                     'message' => 'No database specified in the payload',
                 ], 400);
             }
-
-            // Configurar la conexión dinámica
             Config::set('database.connections.dynamic_database', [
                 'driver' => 'mysql',
                 'host' => env('DB_HOST', '127.0.0.1'),
                 'port' => env('DB_PORT', '3306'),
-                'database' => 'lempapco_' . $data_base,  // Usar el nombre de la base de datos desde el payload
+                'database' => "lempapco_" . $data_base,
                 'username' => env('DB_USERNAME', 'root'),
                 'password' => env('DB_PASSWORD', ''),
                 'charset' => 'utf8mb4',
+                'collation' => 'utf8mb4_unicode_ci',
             ]);
 
             // Establecer la conexión dinámica
-            DB::reconnect('dynamic_database');  // Establecer la conexión para esta solicitud
+            DB::reconnect('dynamic_database');
 
+            // **Verificar la conexión haciendo una consulta simple**
+            DB::connection('dynamic_database')->getPdo();
+        } catch (\PDOException $e) {
+            // Error en la conexión a la base de datos
+            return response()->json([
+                'message' => 'Failed to connect to the database',
+                'error' => $e->getMessage()
+            ], 500);
         } catch (\Exception $e) {
+            // Error en el token o general
             return response()->json([
                 'message' => 'Invalid or expired token',
                 'error' => $e->getMessage()
