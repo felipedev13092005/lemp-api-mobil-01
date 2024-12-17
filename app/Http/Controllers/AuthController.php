@@ -21,6 +21,7 @@ class AuthController extends Controller
             'iss' => 'your-application',
             'db' => $user->bd,
             'code' => $user->codigo_usuario,
+            'id_empresa' => $user->id_empresa,
             'iat' => time(),
             'exp' => time() + 60 * 60 * 24,
         ];

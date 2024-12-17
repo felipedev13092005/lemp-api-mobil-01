@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientesController;
+use App\Http\Controllers\ProductosController;
 use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -13,4 +14,7 @@ Route::group(['prefix' => 'auth'], function () {
 });
 Route::group(['prefix' => 'clientes'], function () {
     Route::get('/', ClientesController::class . '@index')->middleware(JwtMiddleware::class);
+});
+Route::group(['prefix' => 'productos'], function () {
+    Route::get('/', ProductosController::class . '@index')->middleware(JwtMiddleware::class);
 });
