@@ -55,9 +55,6 @@ class JwtMiddleware
 
             // Establecer la conexión dinámica
             DB::reconnect('dynamic_database');
-
-            // **Verificar la conexión haciendo una consulta simple**
-            DB::connection('dynamic_database')->getPdo();
         } catch (\PDOException $e) {
             // Error en la conexión a la base de datos
             return response()->json([
